@@ -11,4 +11,6 @@
     <string name="true_button">True</string>
     <string name="false_button">False</string>
     <string name="next_button">Next</string>
+    <string name="prev_button">Prev</string>
+
 </resources>
