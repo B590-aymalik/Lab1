@@ -5,6 +5,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.view.View
+import com.google.android.material.snackbar.Snackbar
+import android.widget.Toast
+
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -21,8 +24,14 @@ class MainActivity : AppCompatActivity() {
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
 
-        trueButton.setOnClickListener{
-            view : View ->
+        trueButton.setOnClickListener { view: View ->
+            Snackbar.make(
+                findViewById(android.R.id.content), // Parent view
+                getString(R.string.correct_toast), // Message
+                Snackbar.LENGTH_SHORT // Duration
+            ).show()
         }
+
+
     }
 }
