@@ -44,8 +44,12 @@ class MainActivity : AppCompatActivity() {
 
         // Set listener for the Next button
         binding.nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
-            updateQuestion()
+            goToNextQuestion()
+        }
+
+        // Set listener for the TextView to go to the next question
+        binding.questionTextView.setOnClickListener {
+            goToNextQuestion()
         }
     }
 
@@ -69,5 +73,11 @@ class MainActivity : AppCompatActivity() {
     // Function to show feedback using Toast
     private fun showFeedback(messageResId: Int) {
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+    }
+
+    // Function to move to the next question
+    private fun goToNextQuestion() {
+        currentIndex = (currentIndex + 1) % questionBank.size
+        updateQuestion()
     }
 }
