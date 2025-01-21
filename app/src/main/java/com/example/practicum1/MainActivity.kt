@@ -6,14 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.practicum1.databinding.ActivityMainBinding
 import android.widget.Toast
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
     // List of questions
     private val questionBank = listOf(
-
         Question(R.string.question_oceans, true),
         Question(R.string.question_mideast, false),
         Question(R.string.question_africa, false),
@@ -65,7 +63,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             R.string.incorrect_toast
         }
-        // Show feedback using Toast
+        showFeedback(messageResId)
+    }
+
+    // Function to show feedback using Toast
+    private fun showFeedback(messageResId: Int) {
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
     }
 }
