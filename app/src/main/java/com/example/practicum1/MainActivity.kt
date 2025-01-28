@@ -92,6 +92,11 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
         binding.questionTextView.setText(questionTextResId)
+
+
+        // Re-enable the buttons for the next question
+        binding.trueButton.isEnabled = true
+        binding.falseButton.isEnabled = true
     }
 
     // Function to check the user's answer
@@ -103,6 +108,9 @@ class MainActivity : AppCompatActivity() {
             R.string.incorrect_toast
         }
         showFeedback(messageResId)
+        // Disable the buttons to prevent multiple answers
+        binding.trueButton.isEnabled = false
+        binding.falseButton.isEnabled = false
 
 
     }
