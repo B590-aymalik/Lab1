@@ -6,5 +6,6 @@ import androidx.annotation.StringRes
 
 data class Question(
     @StringRes val textResId: Int,  // Resource ID for question text
-    val answer: Boolean            // True/False answer
+    val answer: Boolean ,
+    var isAnswered: Boolean = false
 )
