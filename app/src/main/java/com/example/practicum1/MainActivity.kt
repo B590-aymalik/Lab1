@@ -5,6 +5,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.practicum1.databinding.ActivityMainBinding
 import android.widget.Toast
+import android.util.Log
+
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate() called")
+
         enableEdgeToEdge()
 
         // Enable view binding
@@ -58,6 +63,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart() called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume() called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause() called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop() called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy() called")
+    }
+
     // Function to update the question text
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
@@ -73,6 +103,8 @@ class MainActivity : AppCompatActivity() {
             R.string.incorrect_toast
         }
         showFeedback(messageResId)
+
+
     }
 
     // Function to show feedback using Toast
