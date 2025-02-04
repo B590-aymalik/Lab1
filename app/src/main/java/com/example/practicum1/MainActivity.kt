@@ -14,9 +14,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // The ViewModel is obtained via the delegate
+    // The ViewModel is obtained via the delegate.
+    // With the correct dependencies, this automatically uses SavedStateViewModelFactory.
     private val quizViewModel: QuizViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
-        // Display the first question (or the current one in ViewModel)
+        // Show the current question (restored via SavedStateHandle)
         updateQuestion()
 
         // True/False buttons
@@ -58,31 +58,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ...
-
     private fun updateQuestion() {
-        // Just ask ViewModel for the text resource for the current question
+        // Ask the ViewModel for the text resource for the current question
         val questionTextResId = quizViewModel.currentQuestionTextResId
         binding.questionTextView.setText(questionTextResId)
 
-        // Update button enabled state if you also moved "isAnswered" logic to the ViewModel
-        // For simplicity, assume not answered => always enabled
+        // If you track "isAnswered" in the ViewModel, update button states accordingly.
+        // For simplicity here, assume it's not answered => enabled
         binding.trueButton.isEnabled = true
         binding.falseButton.isEnabled = true
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        // Get the correct answer from the ViewModel
-        val isCorrect = userAnswer == quizViewModel.currentQuestionAnswer
+        val isCorrect = (userAnswer == quizViewModel.currentQuestionAnswer)
 
-        // If you're also tracking totalAnswers/correctAnswers in ViewModel:
-        //   quizViewModel.totalAnswers++
-        //   if (isCorrect) quizViewModel.correctAnswers++
-        //   if (quizViewModel.totalAnswers == quizViewModel.questionBank.size) {
-        //       showFinalScore()
-        //   }
+        // If you're tracking scores in the ViewModel, update them here:
+        // quizViewModel.totalAnswers++
+        // if (isCorrect) quizViewModel.correctAnswers++
+        // if (quizViewModel.totalAnswers == quizViewModel.questionBank.size) {
+        //     showFinalScore()
+        // }
 
-        // Show toast
+        // Show a toast
         val messageResId = if (isCorrect) {
             R.string.correct_toast
         } else {
@@ -90,13 +87,12 @@ class MainActivity : AppCompatActivity() {
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
 
-        // Optionally disable buttons here if the question has been answered
+        // Disable the buttons if a question is answered
         binding.trueButton.isEnabled = false
         binding.falseButton.isEnabled = false
     }
 
     private fun showFinalScore() {
-        // If you're keeping track of total/correct in the ViewModel:
         val score = quizViewModel.correctAnswers.toDouble() / quizViewModel.questionBank.size
         val scorePercentage = (score * 100).toInt()
         val scoreMessage = getString(R.string.score_message, scorePercentage)
