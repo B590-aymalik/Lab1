@@ -12,7 +12,7 @@ class QuizViewModel(
 ) : ViewModel() {
 
     init {
-        Log.d(TAG, "ViewModel instance created")
+       // Log.d(TAG, "ViewModel instance created")
     }
 
     // The question bank is still here
@@ -44,6 +44,7 @@ class QuizViewModel(
         get() = questionBank[currentIndex].textResId
 
     fun moveToNextQuestion() {
+       // Log.d(TAG, "Updating question text", Exception())
         currentIndex = (currentIndex + 1) % questionBank.size
     }
 
@@ -58,6 +59,6 @@ class QuizViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "ViewModel instance about to be destroyed")
+      //  Log.d(TAG, "ViewModel instance about to be destroyed")
     }
 }
