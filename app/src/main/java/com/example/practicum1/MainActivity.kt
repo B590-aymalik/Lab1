@@ -1,18 +1,13 @@
 package com.example.practicum1
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.Button
-import android.view.View
 import com.google.android.material.snackbar.Snackbar
-import android.widget.Toast
-
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var trueButton: Button
     private lateinit var falseButton: Button
 
@@ -25,13 +20,11 @@ class MainActivity : AppCompatActivity() {
         falseButton = findViewById(R.id.false_button)
 
         trueButton.setOnClickListener { view: View ->
-            Snackbar.make(
-                findViewById(android.R.id.content), // Parent view
-                getString(R.string.correct_toast), // Message
-                Snackbar.LENGTH_SHORT // Duration
-            ).show()
+            Snackbar.make(view, R.string.correctToast, Snackbar.LENGTH_SHORT).show()
         }
 
-
+        falseButton.setOnClickListener { view: View ->
+            Snackbar.make(view, R.string.incorrectToast, Snackbar.LENGTH_SHORT).show()
+        }
     }
 }
