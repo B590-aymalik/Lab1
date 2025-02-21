@@ -1,12 +1,14 @@
 package com.example.practicum1
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import android.util.Log
-import com.example.practicum1.databinding.ActivityMainBinding
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import com.example.practicum1.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
 
@@ -14,9 +16,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // The ViewModel is obtained via the delegate.
-    // With the correct dependencies, this automatically uses SavedStateViewModelFactory.
+    // ViewModel initialization
     private val quizViewModel: QuizViewModel by viewModels()
+
+    // Registering result callback for CheatActivity
+    private val cheatLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            quizViewModel.isCheater = result.data?.getBooleanExtra(
+                CheatActivity.EXTRA_ANSWER_SHOWN, false
+            ) ?: false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,10 +42,10 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
-        // Show the current question (restored via SavedStateHandle)
+        // Display the current question
         updateQuestion()
 
-        // True/False buttons
+        // True/False Buttons
         binding.trueButton.setOnClickListener {
             checkAnswer(true)
         }
@@ -41,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             checkAnswer(false)
         }
 
-        // Next/Prev
+        // Next/Previous Buttons
         binding.nextButton.setOnClickListener {
             quizViewModel.moveToNextQuestion()
             updateQuestion()
@@ -51,51 +63,41 @@ class MainActivity : AppCompatActivity() {
             updateQuestion()
         }
 
-        // Clicking on the question text also goes to next question
+        // Clicking on the question text also moves to the next question
         binding.questionTextView.setOnClickListener {
             quizViewModel.moveToNextQuestion()
             updateQuestion()
         }
+
+        // Cheat Button
+        binding.cheatButton.setOnClickListener {
+            val answerIsTrue = quizViewModel.currentQuestionAnswer
+            val intent = CheatActivity.newIntent(this, answerIsTrue)
+            cheatLauncher.launch(intent)  // Using the launcher instead of startActivity
+        }
     }
 
     private fun updateQuestion() {
-        // Ask the ViewModel for the text resource for the current question
         val questionTextResId = quizViewModel.currentQuestionTextResId
         binding.questionTextView.setText(questionTextResId)
 
-        // If you track "isAnswered" in the ViewModel, update button states accordingly.
-        // For simplicity here, assume it's not answered => enabled
         binding.trueButton.isEnabled = true
         binding.falseButton.isEnabled = true
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val isCorrect = (userAnswer == quizViewModel.currentQuestionAnswer)
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
-        // If you're tracking scores in the ViewModel, update them here:
-        // quizViewModel.totalAnswers++
-        // if (isCorrect) quizViewModel.correctAnswers++
-        // if (quizViewModel.totalAnswers == quizViewModel.questionBank.size) {
-        //     showFinalScore()
-        // }
-
-        // Show a toast
-        val messageResId = if (isCorrect) {
-            R.string.correct_toast
-        } else {
-            R.string.incorrect_toast
+        val messageResId = when {
+            quizViewModel.isCheater -> R.string.judgment_toast
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
         }
+
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
 
-        // Disable the buttons if a question is answered
+        // Disable answer buttons after selection
         binding.trueButton.isEnabled = false
         binding.falseButton.isEnabled = false
-    }
-
-    private fun showFinalScore() {
-        val score = quizViewModel.correctAnswers.toDouble() / quizViewModel.questionBank.size
-        val scorePercentage = (score * 100).toInt()
-        val scoreMessage = getString(R.string.score_message, scorePercentage)
-        Toast.makeText(this, scoreMessage, Toast.LENGTH_LONG).show()
     }
 }
