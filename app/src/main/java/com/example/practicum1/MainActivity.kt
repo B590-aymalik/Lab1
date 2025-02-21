@@ -1,13 +1,14 @@
 package com.example.practicum1
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.Toast
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.example.practicum1.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
@@ -24,9 +25,13 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            quizViewModel.isCheater = result.data?.getBooleanExtra(
+            val userCheated = result.data?.getBooleanExtra(
                 CheatActivity.EXTRA_ANSWER_SHOWN, false
             ) ?: false
+            if (userCheated) {
+                // Mark the current question as cheated
+                quizViewModel.setQuestionCheated(quizViewModel.currentIndex)
+            }
         }
     }
 
@@ -73,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         binding.cheatButton.setOnClickListener {
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this, answerIsTrue)
-            cheatLauncher.launch(intent)  // Using the launcher instead of startActivity
+            cheatLauncher.launch(intent)
         }
     }
 
@@ -81,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         val questionTextResId = quizViewModel.currentQuestionTextResId
         binding.questionTextView.setText(questionTextResId)
 
+        // Re-enable answer buttons for the new question
         binding.trueButton.isEnabled = true
         binding.falseButton.isEnabled = true
     }
@@ -88,8 +94,11 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
+        // If the user cheated on this question, show the "judgment" toast.
+        val hasCheated = quizViewModel.isQuestionCheated(quizViewModel.currentIndex)
+
         val messageResId = when {
-            quizViewModel.isCheater -> R.string.judgment_toast
+            hasCheated -> R.string.judgment_toast
             userAnswer == correctAnswer -> R.string.correct_toast
             else -> R.string.incorrect_toast
         }
